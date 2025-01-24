@@ -1,0 +1,733 @@
+local LocalPlayer 	= game.Players.LocalPlayer
+local Char		 	= LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local Humanoid 		= Char:WaitForChild("Humanoid")
+local RunService 	= game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local camera 		= workspace.Camera
+
+local OldCT 		= camera.CameraType
+local OldFov 		= workspace.CurrentCamera.FieldOfView
+local OldGravity 	= workspace.Gravity
+local OldSpeed 		= Humanoid.WalkSpeed
+local OldJump
+if Humanoid.UseJumpPower then
+	OldJump  = Humanoid.JumpPower
+else
+	OldJump = Humanoid.JumpHeight
+end
+
+local DeviceType
+local DevicT = {
+	"Mobile",
+	"Tablet",
+	"PC"	,
+	"Laptop",
+}
+
+local languages = {
+	"English", "Arabic", "Spanish", "French", "German", "Chinese", "Japanese", "Korean", 
+	"Russian", "Portuguese", "Italian", "Dutch", "Hindi", "Bengali", "Turkish", 
+	"Swedish", "Norwegian", "Finnish", "Danish", "Greek", "Hebrew", "Thai", "Vietnamese", 
+	"Polish", "Czech", "Slovak", "Hungarian", "Romanian", "Ukrainian", "Indonesian", 
+	"Malay", "Filipino", "Serbian", "Croatian", "Slovenian", "Bulgarian", "Lithuanian", 
+	"Latvian", "Estonian", "Persian", "Urdu", "Tamil", "Telugu", "Kannada", "Malayalam", 
+	"Gujarati", "Punjabi", "Marathi", "Swahili", "Zulu", "Afrikaans", "Amharic", "Yoruba",
+	"Hausa", "Igbo", "Catalan", "Basque", "Galician", "Welsh", "Irish", "Scottish Gaelic",
+	"Maltese", "Icelandic", "Esperanto"
+}
+local Frame 	= akdo:createFrame("akdo")
+
+local Main 		= Frame:addTab("Main")
+local Player 	= Frame:addTab("Player")
+local TP 		= Frame:addTab("Tp")
+local ESP 		= Frame:addTab("ESP")
+local Aimbot 	= Frame:addTab("Aimbot")
+local Camera 	= Frame:addTab("Camera")
+local Inventory = Frame:addTab("Inventory")
+local Games 	= Frame:addTab("Games")
+local Executor 	= Frame:addTab("Executor")
+local Server 	= Frame:addTab("Server")
+local Setting 	= Frame:addTab("Setting")
+
+local DeviceTypeDropdown = Main:addDropdown("Device type", "Choose your device type, This affect in some feature", DevicT, 2, function(v) 
+	DeviceType = v
+end)
+
+local SJFGSection = Player:addSection("S & J & F & G")
+
+local SpeedSliderAndTextBox = Player:addSlider("Speed", "", OldSpeed, 0, 500, function(val) 
+	Humanoid.WalkSpeed = val
+end)
+
+local JumpSliderAndTextBox = Player:addSlider("Jump", "", OldJump, 0, 500, function(val) 
+	Humanoid.JumpPower = val
+	Humanoid.JumpHeight = val
+end)
+
+local FovSliderAndTextBox = Player:addSlider("Fov", "", OldFov, 0, 120, function(val)
+	game.Workspace.CurrentCamera.FieldOfView = val
+end)
+
+local GravitySliderAndTextBox = Player:addSlider("Gravity", "", OldGravity, 0, 500, function(val) 
+	game.Workspace.Gravity = val
+end)
+
+local StatDropdownAndToggle = Player:addDT("Stat", {"Super Hero", "Hero", "Normal"}, 3, function(val1,val2)
+	print(val2)
+	if val1 then
+		if val2 == "Super Hero" then
+			Humanoid.WalkSpeed = 120
+			Humanoid.JumpPower = 150
+			Humanoid.JumpHeight = 50
+		elseif val2 == "Hero" then
+			Humanoid.WalkSpeed = 75
+			Humanoid.JumpPower = 100
+			Humanoid.JumpHeight = 25
+		elseif val2 == "Normal" then
+			Humanoid.WalkSpeed = 16
+			Humanoid.JumpPower = 50
+			Humanoid.JumpHeight = 7.5
+		end
+	else
+		Humanoid.WalkSpeed = OldSpeed
+		Humanoid.JumpPower = OldJump
+		Humanoid.JumpHeight = OldJump
+	end
+end)
+
+local StatDropdownAndToggle2 = Player:addDT("Stat", {"Super Speed & Jump", "Super Speed", "Super Jump"}, 3, function(val1,val2)
+	if val1 then
+		if val2 == "Super Speed & Jump" then
+			Humanoid.WalkSpeed = 120
+			Humanoid.JumpPower = 150
+			Humanoid.JumpHeight = 50
+		elseif val2 == "Super Speed" then
+			Humanoid.WalkSpeed = 120
+		elseif val2 == "Super Jump" then
+			Humanoid.JumpPower = 50
+			Humanoid.JumpHeight = 7.5
+		end
+	else
+		if val2 == "Super Speed & Jump" then
+			Humanoid.WalkSpeed = OldSpeed
+			Humanoid.JumpPower = OldJump
+			Humanoid.JumpHeight = OldJump
+		elseif val2 == "Super Speed" then
+			Humanoid.WalkSpeed = OldSpeed
+		elseif val2 == "Super Jump" then
+			Humanoid.JumpPower = OldJump
+			Humanoid.JumpHeight = OldJump
+		end
+	end
+end)
+
+local ToggleSection = Player:addSection("Toggle Section")
+local row1 = Player:addRow()
+
+local SpaceFlyToggle = row1:addToggle("Space Fly", "Jump and you will go up but can move in the X-axis,After long time you will go down.", function(val) 
+	if val then
+		Humanoid.WalkSpeed = 750
+		Humanoid.JumpPower = 500
+		Humanoid.JumpHeight = 500
+		game.Workspace.Gravity = 0.1
+	else
+		Humanoid.WalkSpeed = OldSpeed
+		Humanoid.JumpPower = OldJump
+		Humanoid.JumpHeight = OldJump
+		game.Workspace.Gravity = OldGravity
+	end
+end)
+
+FLYING = false
+QEfly = true
+iyflyspeed = 1
+vehicleflyspeed = 1
+
+function getRoot(char)
+	local rootPart = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
+	return rootPart
+end
+
+function randomString()
+	local length = math.random(10, 20)
+	local array = {}
+	for i = 1, length do
+		array[i] = string.char(math.random(32, 126))
+	end
+	return table.concat(array)
+end
+
+local IYMouse = LocalPlayer:GetMouse()
+
+function handleFlyInput(control, vfly)
+	local speed = vfly and vehicleflyspeed or iyflyspeed
+	local keys = {
+		w = {F = speed},
+		s = {B = -speed},
+		a = {L = -speed},
+		d = {R = speed},
+		e = QEfly and {Q = speed * 2} or nil,
+		q = QEfly and {E = -speed * 2} or nil
+	}
+
+	return keys[control]
+end
+
+function FLY(vfly)
+	repeat wait() until LocalPlayer and Char and getRoot(Char) and Char:FindFirstChildOfClass("Humanoid")
+	repeat wait() until IYMouse
+	if flyKeyDown or flyKeyUp then
+		flyKeyDown:Disconnect()
+		flyKeyUp:Disconnect()
+	end
+
+	local T = getRoot(Char)
+	local CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+	local lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+	local SPEED = 0
+
+	local function FLY()
+		FLYING = true
+		local BG = Instance.new('BodyGyro')
+		local BV = Instance.new('BodyVelocity')
+		BG.P = 9e4
+		BG.Parent = T
+		BV.Parent = T
+		BG.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+		BG.cframe = T.CFrame
+		BV.velocity = Vector3.new(0, 0, 0)
+		BV.maxForce = Vector3.new(9e9, 9e9, 9e9)
+		task.spawn(function()
+			repeat wait()
+				local moving = CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0
+				if moving then
+					SPEED = 50
+				elseif not moving and SPEED ~= 0 then
+					SPEED = 0
+				end
+				if moving then
+					BV.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (CONTROL.F + CONTROL.B)) +
+						((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(CONTROL.L + CONTROL.R, (CONTROL.F + CONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) -
+							game.Workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
+					lCONTROL = {F = CONTROL.F, B = CONTROL.B, L = CONTROL.L, R = CONTROL.R}
+				elseif SPEED ~= 0 then
+					BV.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (lCONTROL.F + lCONTROL.B)) +
+						((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(lCONTROL.L + lCONTROL.R, (lCONTROL.F + lCONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) -
+							game.Workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
+				else
+					BV.velocity = Vector3.new(0, 0, 0)
+				end
+				BG.cframe = game.Workspace.CurrentCamera.CoordinateFrame
+			until not FLYING
+			CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+			lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+			SPEED = 0
+			BG:Destroy()
+			BV:Destroy()
+			if Char:FindFirstChildOfClass('Humanoid') then
+				Char:FindFirstChildOfClass('Humanoid').PlatformStand = false
+			end
+		end)
+	end
+
+	flyKeyDown = IYMouse.KeyDown:Connect(function(KEY)
+		local controlChange = handleFlyInput(KEY:lower(), vfly)
+		if controlChange then
+			for k, v in pairs(controlChange) do
+				CONTROL[k] = v
+			end
+		end
+		pcall(function() game.Workspace.CurrentCamera.CameraType = Enum.CameraType.Track end)
+	end)
+
+	flyKeyUp = IYMouse.KeyUp:Connect(function(KEY)
+		local controlChange = handleFlyInput(KEY:lower(), vfly)
+		if controlChange then
+			for k, _ in pairs(controlChange) do
+				CONTROL[k] = 0
+			end
+		end
+	end)
+
+	FLY()
+end
+
+local FlyToggle = row1:addToggle("Fly", "", function(val)
+	FLYING = false
+	if flyKeyDown or flyKeyUp then
+		flyKeyDown:Disconnect()
+		flyKeyUp:Disconnect()
+	end
+	if Char:FindFirstChildOfClass('Humanoid') then
+		Char:FindFirstChildOfClass('Humanoid').PlatformStand = false
+	end
+	pcall(function() game.Workspace.CurrentCamera.CameraType = Enum.CameraType.Custom end)
+	if val then 
+		FLY()
+	end
+end)
+
+local row2 = Player:addRow()
+
+local jumpConnection
+local autoJumpConnection
+
+local InfJumpToggle = row2:addToggle("Inf Jump", "", function(val)
+	if val then
+		jumpConnection = UserInputService.JumpRequest:Connect(function()
+			if Humanoid:GetState() ~= Enum.HumanoidStateType.Jumping and Humanoid:GetState() ~= Enum.HumanoidStateType.Physics then
+				Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+			end
+		end)
+	else
+		if jumpConnection then
+			jumpConnection:Disconnect()
+			jumpConnection = nil
+		end
+	end
+end)
+
+local AutoJumpToggle = row2:addToggle("Auto Jump", "", function(val)
+	if val then
+		autoJumpConnection = RunService.Heartbeat:Connect(function()
+			if Humanoid:GetState() ~= Enum.HumanoidStateType.Jumping and Humanoid:GetState() ~= Enum.HumanoidStateType.Physics then
+				Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+			end
+		end)
+	else
+		if autoJumpConnection then
+			autoJumpConnection:Disconnect()
+			autoJumpConnection = nil
+		end
+	end
+end)
+
+local NoClipToggle = Player:addToggle("NoClip", "", function(val) 
+	if val then
+		for _, part in ipairs(Char:GetDescendants()) do
+			if part:IsA("BasePart") and part.CanCollide then
+				part.CanCollide = false
+			end
+		end
+	else
+		for _, part in ipairs(Char:GetDescendants()) do
+			if part:IsA("BasePart") and not part.CanCollide then
+				part.CanCollide = true
+			end
+		end
+	end
+end)
+
+local ResetCharacteButton = Player:addButton("Reset Characte", "", function(val)
+	Humanoid:TakeDamage(Humanoid.Health)
+end)
+
+local RefreshOldStats = Player:addButton("Refresh old stats", "When you disable any speed toggle, your stats will revert to the old ones, this makes your speed the old one.", function()
+	OldGravity 		= game.Workspace.Gravity
+	OldSpeed 		= Humanoid.WalkSpeed
+	if Humanoid.UseJumpPower then
+		OldJump  = Humanoid.JumpPower
+	else
+		OldJump = Humanoid.JumpHeight
+	end
+end)
+
+local TPListPlayers = {}
+for _, player in ipairs(game.Players:GetPlayers()) do
+	table.insert(TPListPlayers, player.Name)
+end
+
+local TPToPlr = TP:addDropdown("TP To", "", TPListPlayers, 2,function(selectedOption)
+	Char.HumanoidRootPart.CFrame = game.Players:FindFirstChild(selectedOption).Character.HumanoidRootPart.CFrame
+end)
+
+game.Players.PlayerAdded:Connect(function(player)
+	table.insert(TPListPlayers, player.Name)
+	TPToPlr:updateDropdown("TP To", "", TPListPlayers)
+end)
+
+game.Players.PlayerRemoving:Connect(function(player)
+	for i, v in ipairs(TPListPlayers) do
+		if v == player.Name then
+			table.remove(TPListPlayers, i)
+			break
+		end
+	end
+	TPToPlr:updateDropdown("TP To", "", TPListPlayers)
+end)
+
+local TPTool = TP:addButton("TP Tool", "", function()
+	
+end)
+
+local TP2Lastdeath = TP:addButton("TP To Last Death", "", function()
+	
+end)
+
+local OPTP = TP:addFrameButton("OP TP", "")
+
+function Coordinates()
+	local Position = game.Workspace.Camera.CFrame
+	local Text = "Coordinates: (" 
+		.. tostring(math.floor(Position.X)) .. ", " 
+		.. tostring(math.floor(Position.Y)) .. ", " 
+		.. tostring(math.floor(Position.Z)) .. ")"
+	return Text
+end
+
+local CoordinatesLabel = OPTP:addLabel(Coordinates())
+
+game.Workspace.Camera:GetPropertyChangedSignal("CFrame"):Connect(function()
+	CoordinatesLabel:updateLabel(Coordinates())
+end) 
+
+local OPTPRow = OPTP:addRow()
+
+local AddCoords = OPTP:addButton("Add Coords", "", function()
+	
+end)
+
+local CamerT = {
+	"Attach", "Custom"	, "Fixed"	  ,
+	"Follow", "Orbital"	, "Scriptable",
+	"Track"	, "Watch"
+}
+
+local CamerType = Camera:addDT("Camera Type", CamerT, 4,function(val1,val2) 
+	if val1 then
+		game.Workspace.Camera.CameraType = Enum.CameraType[val2]
+	else
+		game.Workspace.Camera.CameraType = OldCT
+	end
+end)
+
+local pi    = math.pi
+local abs   = math.abs
+local clamp = math.clamp
+local exp   = math.exp
+local rad   = math.rad
+local sign  = math.sign
+local sqrt  = math.sqrt
+local tan   = math.tan
+
+local ContextActionService = game:GetService("ContextActionService")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local StarterGui = game:GetService("StarterGui")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+
+Workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
+	local newCamera = Workspace.CurrentCamera
+	if newCamera then
+		Camera = newCamera
+	end
+end)
+
+local TOGGLE_INPUT_PRIORITY = Enum.ContextActionPriority.Low.Value
+local INPUT_PRIORITY = Enum.ContextActionPriority.High.Value
+local FREECAM_MACRO_KB = {Enum.KeyCode.LeftShift, Enum.KeyCode.P}
+
+local NAV_GAIN = Vector3.new(1, 1, 1)*128
+local PAN_GAIN = Vector2.new(0.75, 1)*8
+local FOV_GAIN = 300
+
+local PITCH_LIMIT = rad(90)
+
+local VEL_STIFFNESS = 1.5
+local PAN_STIFFNESS = 1.0
+local FOV_STIFFNESS = 4.0
+
+local Spring = {} do
+	Spring.__index = Spring
+
+	function Spring.new(freq, pos)
+		local self = setmetatable({}, Spring)
+		self.f = freq
+		self.p = pos
+		self.v = pos*0
+		return self
+	end
+
+	function Spring:Update(dt, goal)
+		local f = self.f*2*pi
+		local p0 = self.p
+		local v0 = self.v
+
+		local offset = goal - p0
+		local decay = exp(-f*dt)
+
+		local p1 = goal + (v0*dt - offset*(f*dt + 1))*decay
+		local v1 = (f*dt*(offset*f - v0) + v0)*decay
+
+		self.p = p1
+		self.v = v1
+
+		return p1
+	end
+
+	function Spring:Reset(pos)
+		self.p = pos
+		self.v = pos*0
+	end
+end
+
+local cameraPos = Vector3.new()
+local cameraRot = Vector2.new()
+local cameraFov = 0
+
+local velSpring = Spring.new(VEL_STIFFNESS, Vector3.new())
+local panSpring = Spring.new(PAN_STIFFNESS, Vector2.new())
+local fovSpring = Spring.new(FOV_STIFFNESS, 0)
+
+local Input = {} do
+	local thumbstickCurve do
+		local K_CURVATURE = 2.0
+		local K_DEADZONE = 0.15
+
+		local function fCurve(x)
+			return (exp(K_CURVATURE*x) - 1)/(exp(K_CURVATURE) - 1)
+		end
+
+		local function fDeadzone(x)
+			return fCurve((x - K_DEADZONE)/(1 - K_DEADZONE))
+		end
+
+		function thumbstickCurve(x)
+			return sign(x)*clamp(fDeadzone(abs(x)), 0, 1)
+		end
+	end
+
+	local gamepad = {
+		ButtonX = 0,
+		ButtonY = 0,
+		DPadDown = 0,
+		DPadUp = 0,
+		ButtonL2 = 0,
+		ButtonR2 = 0,
+		Thumbstick1 = Vector2.new(),
+		Thumbstick2 = Vector2.new(),
+	}
+
+	local keyboard = {
+		W = 0,
+		A = 0,
+		S = 0,
+		D = 0,
+		E = 0,
+		Q = 0,
+		U = 0,
+		H = 0,
+		J = 0,
+		K = 0,
+		I = 0,
+		Y = 0,
+		Up = 0,
+		Down = 0,
+		LeftShift = 0,
+		RightShift = 0,
+	}
+
+	local mouse = {
+		Delta = Vector2.new(),
+		MouseWheel = 0,
+	}
+
+	local NAV_GAMEPAD_SPEED  = Vector3.new(1, 1, 1)
+	local NAV_KEYBOARD_SPEED = Vector3.new(1, 1, 1)
+	local PAN_MOUSE_SPEED    = Vector2.new(1, 1)*(pi/64)
+	local PAN_GAMEPAD_SPEED  = Vector2.new(1, 1)*(pi/8)
+	local FOV_WHEEL_SPEED    = 1.0
+	local FOV_GAMEPAD_SPEED  = 0.25
+	local NAV_ADJ_SPEED      = 0.75
+	local NAV_SHIFT_MUL      = 0.25
+
+	local navSpeed = 1
+
+	function Input.Vel(dt)
+		navSpeed = clamp(navSpeed + dt*(keyboard.Up - keyboard.Down)*NAV_ADJ_SPEED, 0.01, 4)
+
+		local kGamepad = Vector3.new(
+			thumbstickCurve(gamepad.Thumbstick1.x),
+			thumbstickCurve(gamepad.ButtonR2) - thumbstickCurve(gamepad.ButtonL2),
+			thumbstickCurve(-gamepad.Thumbstick1.y)
+		)*NAV_GAMEPAD_SPEED
+
+		local kKeyboard = Vector3.new(
+			keyboard.D - keyboard.A + keyboard.K - keyboard.H,
+			keyboard.E - keyboard.Q + keyboard.I - keyboard.Y,
+			keyboard.S - keyboard.W + keyboard.J - keyboard.U
+		)*NAV_KEYBOARD_SPEED
+
+		local shift = UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) or UserInputService:IsKeyDown(Enum.KeyCode.RightShift)
+
+		return (kGamepad + kKeyboard)*(navSpeed*(shift and NAV_SHIFT_MUL or 1))
+	end
+
+	function Input.Pan(dt)
+		local kGamepad = Vector2.new(
+			thumbstickCurve(gamepad.Thumbstick2.y),
+			thumbstickCurve(-gamepad.Thumbstick2.x)
+		)*PAN_GAMEPAD_SPEED
+		local kMouse = mouse.Delta*PAN_MOUSE_SPEED
+		mouse.Delta = Vector2.new()
+		return kGamepad + kMouse
+	end
+
+	function Input.Fov(dt)
+		local kGamepad = (gamepad.ButtonX - gamepad.ButtonY)*FOV_GAMEPAD_SPEED
+		local kMouse = mouse.MouseWheel*FOV_WHEEL_SPEED
+		mouse.MouseWheel = 0
+		return kGamepad + kMouse
+	end
+
+	do
+		local function Keypress(action, state, input)
+			keyboard[input.KeyCode.Name] = state == Enum.UserInputState.Begin and 1 or 0
+			return Enum.ContextActionResult.Sink
+		end
+
+		local function GpButton(action, state, input)
+			gamepad[input.KeyCode.Name] = state == Enum.UserInputState.Begin and 1 or 0
+			return Enum.ContextActionResult.Sink
+		end
+
+		local function MousePan(action, state, input)
+			local delta = input.Delta
+			mouse.Delta = Vector2.new(-delta.y, -delta.x)
+			return Enum.ContextActionResult.Sink
+		end
+
+		local function Thumb(action, state, input)
+			gamepad[input.KeyCode.Name] = input.Position
+			return Enum.ContextActionResult.Sink
+		end
+
+		local function Trigger(action, state, input)
+			gamepad[input.KeyCode.Name] = input.Position.z
+			return Enum.ContextActionResult.Sink
+		end
+
+		local function MouseWheel(action, state, input)
+			mouse[input.UserInputType.Name] = -input.Position.z
+			return Enum.ContextActionResult.Sink
+		end
+
+		local function Zero(t)
+			for k, v in pairs(t) do
+				t[k] = v*0
+			end
+		end
+
+		function Input.StartCapture()
+			ContextActionService:BindActionAtPriority("FreecamKeyboard", Keypress, false, INPUT_PRIORITY,
+				Enum.KeyCode.W, Enum.KeyCode.U,
+				Enum.KeyCode.A, Enum.KeyCode.H,
+				Enum.KeyCode.S, Enum.KeyCode.J,
+				Enum.KeyCode.D, Enum.KeyCode.K,
+				Enum.KeyCode.E, Enum.KeyCode.I,
+				Enum.KeyCode.Q, Enum.KeyCode.Y,
+				Enum.KeyCode.Up, Enum.KeyCode.Down
+			)
+			ContextActionService:BindActionAtPriority("FreecamMousePan",          MousePan,   false, INPUT_PRIORITY, Enum.UserInputType.MouseMovement)
+			ContextActionService:BindActionAtPriority("FreecamMouseWheel",        MouseWheel, false, INPUT_PRIORITY, Enum.UserInputType.MouseWheel)
+			ContextActionService:BindActionAtPriority("FreecamGamepadButton",     GpButton,   false, INPUT_PRIORITY, Enum.KeyCode.ButtonX, Enum.KeyCode.ButtonY)
+			ContextActionService:BindActionAtPriority("FreecamGamepadTrigger",    Trigger,    false, INPUT_PRIORITY, Enum.KeyCode.ButtonR2, Enum.KeyCode.ButtonL2)
+			ContextActionService:BindActionAtPriority("FreecamGamepadThumbstick", Thumb,      false, INPUT_PRIORITY, Enum.KeyCode.Thumbstick1, Enum.KeyCode.Thumbstick2)
+		end
+
+		function Input.StopCapture()
+			navSpeed = 1
+			Zero(gamepad)
+			Zero(keyboard)
+			Zero(mouse)
+			ContextActionService:UnbindAction("FreecamKeyboard")
+			ContextActionService:UnbindAction("FreecamMousePan")
+			ContextActionService:UnbindAction("FreecamMouseWheel")
+			ContextActionService:UnbindAction("FreecamGamepadButton")
+			ContextActionService:UnbindAction("FreecamGamepadTrigger")
+			ContextActionService:UnbindAction("FreecamGamepadThumbstick")
+		end
+	end
+end
+
+local function GetFocusDistance(cameraFrame)
+	local znear = 0.1
+	local viewport = Workspace.CurrentCamera.ViewportSize
+	local projy = 2*tan(cameraFov/2)
+	local projx = viewport.x/viewport.y*projy
+	local fx = cameraFrame.rightVector
+	local fy = cameraFrame.upVector
+	local fz = cameraFrame.lookVector
+
+	local minVect = Vector3.new()
+	local minDist = 512
+
+	for x = 0, 1, 0.5 do
+		for y = 0, 1, 0.5 do
+			local cx = (x - 0.5)*projx
+			local cy = (y - 0.5)*projy
+			local offset = fx*cx - fy*cy + fz
+			local origin = cameraFrame.p + offset*znear
+			local _, hit = Workspace:FindPartOnRay(Ray.new(origin, offset.unit*minDist))
+			local dist = (hit - origin).magnitude
+			if minDist > dist then
+				minDist = dist
+				minVect = offset.unit
+			end
+		end
+	end
+
+	return fz:Dot(minVect)*minDist
+end
+
+local function StepFreecam(dt)
+	local vel = velSpring:Update(dt, Input.Vel(dt))
+	local pan = panSpring:Update(dt, Input.Pan(dt))
+	local fov = fovSpring:Update(dt, Input.Fov(dt))
+
+	local zoomFactor = sqrt(tan(rad(70/2))/tan(rad(cameraFov/2)))
+
+	cameraFov = clamp(cameraFov + fov*FOV_GAIN*(dt/zoomFactor), 1, 120)
+	cameraRot = cameraRot + pan*PAN_GAIN*(dt/zoomFactor)
+	cameraRot = Vector2.new(clamp(cameraRot.x, -PITCH_LIMIT, PITCH_LIMIT), cameraRot.y%(2*pi))
+
+	local cameraCFrame = CFrame.new(cameraPos)*CFrame.fromOrientation(cameraRot.x, cameraRot.y, 0)*CFrame.new(vel*NAV_GAIN*dt)
+	cameraPos = cameraCFrame.p
+
+	Workspace.CurrentCamera.CFrame = cameraCFrame
+	Workspace.CurrentCamera.Focus = cameraCFrame*CFrame.new(0, 0, -GetFocusDistance(cameraCFrame))
+	Workspace.CurrentCamera.FieldOfView = cameraFov
+end
+
+local function StartFreecam()
+	local cameraCFrame = Workspace.CurrentCamera.CFrame
+	cameraRot = Vector2.new(cameraCFrame:toEulerAnglesYXZ())
+	cameraPos = cameraCFrame.p
+	cameraFov = Workspace.CurrentCamera.FieldOfView
+
+	velSpring:Reset(Vector3.new())
+	panSpring:Reset(Vector2.new())
+	fovSpring:Reset(0)
+
+	RunService:BindToRenderStep("Freecam", Enum.RenderPriority.Camera.Value, StepFreecam)
+	Input.StartCapture()
+end
+
+local function StopFreecam()
+	Input.StopCapture()
+	RunService:UnbindFromRenderStep("Freecam")
+end
+
+local freecamtog = Camera:addToggle("FreeCam", "Only work on Pc or If you have Keybord", function(val)
+	if val then
+		StartFreecam()
+	else
+		StopFreecam()
+	end
+end)
+	
+
+local LanguageDropdown = Main:addDropdown("Language", "", languages, 4, function(language)
+	print("Selected language:", language)
+end)
