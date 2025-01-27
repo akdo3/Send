@@ -37,8 +37,7 @@ local languages = {
 	"Hausa", "Igbo", "Catalan", "Basque", "Galician", "Welsh", "Irish", "Scottish Gaelic",
 	"Maltese", "Icelandic", "Esperanto"
 }
-local Frame 	= akdo:createFrame("akdo")
-
+local Frame 	= akdo:createFrame()
 local Main 		= Frame:addTab("Main")
 local Player 	= Frame:addTab("Player")
 local TP 		= Frame:addTab("Tp")
