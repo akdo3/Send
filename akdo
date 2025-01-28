@@ -656,6 +656,7 @@ end, 2)
 local BangTP = TP:addDT("Bang To", PlayersList, function(selectedOption, val)
 	while val do
 		Char.HumanoidRootPart.CFrame = game.Players:FindFirstChild(selectedOption).Character.HumanoidRootPart.CFrame
+		wait()
 	end
 end, 2)
 
@@ -724,7 +725,6 @@ local freecamtog = Camera:addToggle("FreeCam", "Only work on Pc or If you have K
 		StopFreecam()
 	end
 end)
-
 
 local LanguageDropdown = Main:addDropdown("Language", "", languages, function(language)
 	print("Selected language:", language)
