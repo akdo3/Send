@@ -639,9 +639,7 @@ end, 3)
 
 local ToggleSection = Player:addSection("Toggle Section")
 
-local row1 = Player:addRow()
-
-local SpaceFlyToggle = row1:addToggle("Space Fly", "Jump and you will go up but can move in the X-axis,After long time you will go down.", function(val) 
+local SpaceFlyToggle = Player:addToggle("Space Fly", "Jump and you will go up but can move in the X-axis,After long time you will go down.", function(val) 
 	if val then
 		Humanoid.WalkSpeed = 750
 		Humanoid.JumpPower = 500
@@ -655,28 +653,43 @@ local SpaceFlyToggle = row1:addToggle("Space Fly", "Jump and you will go up but 
 	end
 end)
 
-local FlyToggle = row1:addToggle("Fly", "", function(val)
-	FLYING = false
-	if flyKeyDown or flyKeyUp then
-		flyKeyDown:Disconnect()
-		flyKeyUp:Disconnect()
-	end
-	if Char:FindFirstChildOfClass('Humanoid') then
-		Char:FindFirstChildOfClass('Humanoid').PlatformStand = false
-	end
-	pcall(function() game.Workspace.CurrentCamera.CameraType = Enum.CameraType.Custom end)
+local FlyToggle = Player:addToggle("Fly", "", function(val)
 	if val then
-		if DevicT == "Mobile" or "Tablet" then
+		if DevicT == "Mobile" or DevicT == "Tablet" then
 			mobilefly()
 		else
 			FLY()
 		end
+	else
+		FLYING = false
+
+		if flyKeyDown or flyKeyUp then
+			flyKeyDown:Disconnect()
+			flyKeyUp:Disconnect()
+		end
+		if Char:FindFirstChildOfClass('Humanoid') then
+			Char:FindFirstChildOfClass('Humanoid').PlatformStand = false
+		end
+		pcall(function() game.Workspace.CurrentCamera.CameraType = Enum.CameraType.Custom end)
 	end
 end)
 
-local row2 = Player:addRow()
+local FirstLabel = Player:addLabel(iyflyspeed)
 
-local InfJumpToggle = row2:addToggle("Inf Jump", "", function(val)
+local FirstRow = Player:addRow()
+
+local IncreaseFlySpeed = Player:addButton("+", "Increase Fly Speed", function()
+	iyflyspeed = iyflyspeed + 1
+	FirstLabel:updateLabel(iyflyspeed)
+end)
+local DecreaseFlySpeed = Player:addButton("-", "Decrease Fly Speed", function()
+	iyflyspeed = iyflyspeed - 1
+	FirstLabel:updateLabel(iyflyspeed)
+end)
+
+FirstRow:End()
+
+local InfJumpToggle = Player:addToggle("Inf Jump", "", function(val)
 	if val then
 		jumpConnection = UserInputService.JumpRequest:Connect(function()
 			if Humanoid:GetState() ~= Enum.HumanoidStateType.Jumping and Humanoid:GetState() ~= Enum.HumanoidStateType.Physics then
@@ -691,19 +704,36 @@ local InfJumpToggle = row2:addToggle("Inf Jump", "", function(val)
 	end
 end)
 
-local AutoJumpToggle = row2:addToggle("Auto Jump", "", function(val)
+local RunService = game:GetService("RunService")
+local isAutoJumpEnabled = false
+
+local RunService = game:GetService("RunService")
+local autoJumpConnection
+
+local AutoJumpToggle = Player:addToggle("Auto Jump", "", function(val)
 	if val then
-		autoJumpConnection = RunService.Heartbeat:Connect(function()
-			if Humanoid:GetState() ~= Enum.HumanoidStateType.Jumping and Humanoid:GetState() ~= Enum.HumanoidStateType.Physics then
-				Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-			end
-		end)
+		if not autoJumpConnection then
+			autoJumpConnection = RunService.Heartbeat:Connect(function()
+				local character = game.Players.LocalPlayer.Character
+				if character then
+					local humanoid = character:FindFirstChildOfClass("Humanoid")
+					if humanoid then
+						humanoid.Jump = true
+					end
+				end
+			end)
+		end
 	else
 		if autoJumpConnection then
 			autoJumpConnection:Disconnect()
 			autoJumpConnection = nil
 		end
 	end
+end)
+
+
+local aa = Player:addButton("sx", "", function() 
+	Humanoid.Jump = true
 end)
 
 local NoClipToggle = Player:addToggle("NoClip", "", function(val) 
@@ -722,11 +752,11 @@ local NoClipToggle = Player:addToggle("NoClip", "", function(val)
 	end
 end)
 
-local ResetCharacteButton = Player:addButton("Reset Characte", "", function(val)
+local ResetCharacter = Player:addButton("Reset Characte", "", function(val)
 	Humanoid:TakeDamage(Humanoid.Health)
 end)
 
-local RefreshOldStats = Player:addButton("Refresh old stats", "When you disable any speed toggle, your stats will revert to the old ones, this makes your speed the old one.", function()
+local RefreshOldStats = Player:addButton("Refresh old stats", "When you disable any toggle use Speed, Jump, and Gravity, your stats will revert to the old ones, this makes your speed the old one.", function()
 	OldGravity 		= game.Workspace.Gravity
 	OldSpeed 		= Humanoid.WalkSpeed
 	if Humanoid.UseJumpPower then
