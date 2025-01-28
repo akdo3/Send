@@ -1,4 +1,4 @@
-
+local akdo = loadstring(game:HttpGet("https://raw.githubusercontent.com/akdo3/akdo-Library/refs/heads/main/Main.lua"))()
 
 local LocalPlayer 	= game.Players.LocalPlayer
 local Char		 	= LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
