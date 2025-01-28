@@ -1,4 +1,4 @@
-local akdo = loadstring(game:HttpGet("https://raw.githubusercontent.com/akdo3/akdo-Library/refs/heads/main/Main.lua"))()
+
 
 local LocalPlayer 	= game.Players.LocalPlayer
 local Char		 	= LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
@@ -588,7 +588,7 @@ local GravitySliderAndTextBox = Player:addSlider("Gravity", "", OldGravity, 0, 5
 	game.Workspace.Gravity = val
 end)
 
-local StatDropdownAndToggle = Player:addDT("Stat", {"Super Hero", "Hero", "Normal"}, function(val1,val2)
+local StatDropdownAndToggle = Player:addDT("Stat1", {"Super Hero", "Hero", "Normal"}, function(val1,val2)
 	print(val2)
 	if val1 then
 		if val2 == "Super Hero" then
@@ -611,7 +611,7 @@ local StatDropdownAndToggle = Player:addDT("Stat", {"Super Hero", "Hero", "Norma
 	end
 end, 3)
 
-local StatDropdownAndToggle2 = Player:addDT("Stat", {"Super Speed & Jump", "Super Speed", "Super Jump"}, function(val1,val2)
+local StatDropdownAndToggle2 = Player:addDT("Stat2", {"Super Speed & Jump", "Super Speed", "Super Jump"}, function(val1,val2)
 	if val1 then
 		if val2 == "Super Speed & Jump" then
 			Humanoid.WalkSpeed = 120
@@ -830,5 +830,3 @@ Workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
 		Camera = newCamera
 	end
 end)
-
-return akdo
